@@ -1,14 +1,14 @@
 {
-    "author": "fg",
+    "author": "fg & jjackzhn",
     "dependencies": {},
     "keywords": [],
-    "name": "m7s_wf_metar_2_5",
+    "name": "METAR 7 Segment by fg 2020",
     "pebble": {
         "capabilities": [
             "location",
             "configurable"
         ],
-        "displayName": "M7S_WF_METAR_2_5",
+        "displayName": "M7S_WF_METAR_2_5_2020",
         "enableMultiJS": false,
         "messageKeys": {
             "KEY_BTY_LAST_CHARGED": 13,
