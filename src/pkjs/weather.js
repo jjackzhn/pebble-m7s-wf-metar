@@ -163,7 +163,8 @@ var OWMclimacon= {
   962 : CLIMACON['tornado'], // Hurricane 
 };
 
-var OWM_DEFAULT_API_KEY = "1b5b37a3117bb6acd583d662fdbb24c7";
+var OWM_DEFAULT_API_KEY = "c06de7b9382458d6c30033a3b4ee578d";
+var AVWX_DEFAULT_API_KEY = "uEdxQUy8_Prw65K2LQpovVF7m425Kevu0IEXzpHvJQc"
 
 var configuration = {
   invert: 0,
@@ -236,7 +237,6 @@ function SendToPebble(pos, use_default) {
   
   // Construct URL
   console.log("conf.auto_loc = " + configuration.autodetect_loc);
-  //configuration.OWM_API_KEY = OWM_DEFAULT_API_KEY; //TODO
   if (typeof configuration.OWM_API_KEY === 'string' || configuration.OWM_API_KEY instanceof String){
     if (configuration.OWM_API_KEY == "default"){
       configuration.OWM_API_KEY = OWM_DEFAULT_API_KEY;
@@ -255,7 +255,7 @@ function SendToPebble(pos, use_default) {
         pos_lat + "&lon=" + pos_lon + "&lang=" + configuration.lang_id;
     //url_AVWX = "http://avwx.rest/api/metar.php?lat=" +
     //    pos_lat + "&lon=" + pos_lon + "&format=JSON";
-    url_AVWX = "http://avwx.rest/api/metar/" + pos_lat + "," + pos_lon + "?options=info,translate";
+    url_AVWX = "http://avwx.rest/api/metar/" + pos_lat + "," + pos_lon + "?options=info,translate&token=" + AVWX_DEFAULT_API_KEY;
   } else {
     console.log("conf.def_loc = " + configuration.default_loc);
     var city_name_req = configuration.default_loc;
@@ -265,7 +265,7 @@ function SendToPebble(pos, use_default) {
     url_OWM = "http://api.openweathermap.org/data/2.5/weather?APPID=" + configuration.OWM_API_KEY + "&q=" + city_name_req + "&lang=" + configuration.lang_id;
     url_OWM_forecast = "http://api.openweathermap.org/data/2.5/forecast?APPID=" + configuration.OWM_API_KEY + "&q=" + city_name_req + "&lang=" + configuration.lang_id;
     //url_AVWX = "http://avwx.rest/api/metar.php?station=" + station_name_req + "&format=JSON";
-    url_AVWX = "http://avwx.rest/api/metar/" + station_name_req + "?options=info,translate";
+    url_AVWX = "http://avwx.rest/api/metar/" + station_name_req + "?options=info,translate&token=" + AVWX_DEFAULT_API_KEY;
   }
   
   //UTC:
@@ -282,6 +282,7 @@ function SendToPebble(pos, use_default) {
       try {
         DataJSON_OWM = JSON.parse(responseText);
         console.log("successfully parsed returned text of OWM data.");
+        console.log(JSON.stringify(DataJSON_OWM, null, 2));
       } catch (e){
         DataJSON_OWM_error = 1;
         console.log("could not parse returned text of OWM data: " + e);
@@ -366,22 +367,22 @@ function SendToPebble(pos, use_default) {
                 
                 console.log(JSON.stringify(DataJSON_AVWX, null, 2));
                 
-                console.log("DataJSON_AVWX.Station             --> " + DataJSON_AVWX.Station);
-                console.log("DataJSON_AVWX.Temperature         --> " + DataJSON_AVWX.Temperature);
-                console.log("DataJSON_AVWX.Altimeter           --> " + DataJSON_AVWX.Altimeter);
-                console.log("DataJSON_AVWX.Dewpoint            --> " + DataJSON_AVWX.Dewpoint);
-                console.log("DataJSON_AVWX['Cloud-List']       --> " + DataJSON_AVWX["Cloud-List"]);
-                console.log("DataJSON_AVWX['Other-List']       --> " + DataJSON_AVWX["Other-List"]);
-                console.log("DataJSON_AVWX.Time                --> " + DataJSON_AVWX.Time);
-                console.log("DataJSON_AVWX.Units.Altimeter     --> " + DataJSON_AVWX.Units.Altimeter);
-                console.log("DataJSON_AVWX.Units.Temperature   --> " + DataJSON_AVWX.Units.Temperature);
-                console.log("DataJSON_AVWX.Units['Wind-Speed'] --> " + DataJSON_AVWX.Units["Wind-Speed"]);
-                console.log("DataJSON_AVWX['Wind-Speed']       --> " + DataJSON_AVWX["Wind-Speed"]);
-                console.log("DataJSON_AVWX['Wind-Direction']   --> " + DataJSON_AVWX["Wind-Direction"]);
-                console.log("DataJSON_AVWX.Remarks             --> " + DataJSON_AVWX.Remarks);
+                console.log("DataJSON_AVWX.station             --> " + DataJSON_AVWX.station);
+                console.log("DataJSON_AVWX.temperature.value   --> " + DataJSON_AVWX.temperature.value);
+                console.log("DataJSON_AVWX.altimeter.value     --> " + DataJSON_AVWX.altimeter.value);
+                console.log("DataJSON_AVWX.dewpoint.value      --> " + DataJSON_AVWX.dewpoint.value);
+                console.log("DataJSON_AVWX.clouds              --> " + DataJSON_AVWX.clouds);
+                console.log("DataJSON_AVWX.other               --> " + DataJSON_AVWX.other);
+                console.log("DataJSON_AVWX.time.dt             --> " + DataJSON_AVWX.time.dt);
+                console.log("DataJSON_AVWX.units.altimeter     --> " + DataJSON_AVWX.units.altimeter);
+                console.log("DataJSON_AVWX.units.temperature   --> " + DataJSON_AVWX.units.temperature);
+                console.log("DataJSON_AVWX.units.wind_speed    --> " + DataJSON_AVWX.units.wind_speed);
+                console.log("DataJSON_AVWX.wind_speed.value    --> " + DataJSON_AVWX.wind_speed.value);
+                console.log("DataJSON_AVWX.wind_direction.value--> " + DataJSON_AVWX.wind_direction.value);
+                console.log("DataJSON_AVWX.Remarks             --> " + DataJSON_AVWX.remarks);
               
                 // Station:
-                var station_name = DataJSON_AVWX.Station;
+                var station_name = DataJSON_AVWX.station;
                 if (use_default){
                   //station_name = "*" + station_name + "*"; //TODO ? -->warn_location?
                   warn_location = 1;
@@ -393,59 +394,48 @@ function SendToPebble(pos, use_default) {
                 
                 
                 //METAR infos:
-                var wind_info   = DataJSON_AVWX["Wind-Direction"] + "__/" + DataJSON_AVWX["Wind-Speed"] + "" + DataJSON_AVWX.Units["Wind-Speed"];
+		var wind_dir = " ";
+		if (DataJSON_AVWX.wind_direction.value != null) wind_dir = DataJSON_AVWX.wind_direction.value + "__";
+		else wind_dir = DataJSON_AVWX.wind_direction.repr;
+                var wind_info   = wind_dir + "/" + DataJSON_AVWX.wind_speed.value + "" + DataJSON_AVWX.units.wind_speed;
                 var wind_gust   = " ";
-                if (DataJSON_AVWX["Wind-Gust"] !== ""){
-                  wind_gust   = DataJSON_AVWX["Wind-Gust"] + DataJSON_AVWX.Units["Wind-Speed"];
+                if (DataJSON_AVWX.wind_gust !== null){
+                  wind_gust   = DataJSON_AVWX.wind_gust.value + DataJSON_AVWX.units.wind_speed;
                 }
-                var temperature = DataJSON_AVWX.Temperature + "__" + DataJSON_AVWX.Units.Temperature;
-                var temp_dew_p  = DataJSON_AVWX.Temperature + "__" + DataJSON_AVWX.Units.Temperature + " (D." + DataJSON_AVWX.Dewpoint + "__)";
-                var dew_point   = "D." + DataJSON_AVWX.Dewpoint + "__" + DataJSON_AVWX.Units.Temperature;
-                var altimeter   = DataJSON_AVWX.Altimeter + " " + DataJSON_AVWX.Units.Altimeter;
-                var otherlist   = DataJSON_AVWX["Other-List"];
-                var remarks     = DataJSON_AVWX.Remarks;
-                var cloudlist   = DataJSON_AVWX["Cloud-List"];
-                var flight_rules = DataJSON_AVWX["Flight-Rules"];
-                var runway_vis  = DataJSON_AVWX["Runway-Visibility"];
-                var visibility  = DataJSON_AVWX["Visibility"] + DataJSON_AVWX.Units["Visibility"];
+                var temperature = DataJSON_AVWX.temperature.value + "__" + DataJSON_AVWX.units.temperature;
+                var temp_dew_p  = DataJSON_AVWX.temperature.value + "__" + DataJSON_AVWX.units.temperature + " (D." + DataJSON_AVWX.dewpoint.value + "__)";
+                var dew_point   = "D." + DataJSON_AVWX.dewpoint.value + "__" + DataJSON_AVWX.units.temperature;
+                var altimeter   = DataJSON_AVWX.altimeter.value + " " + DataJSON_AVWX.units.altimeter;
+                var otherlist   = DataJSON_AVWX.other;
+                var remarks     = DataJSON_AVWX.remarks;
+                var cloudlist   = DataJSON_AVWX.clouds;
+                var flight_rules = DataJSON_AVWX.flight_rules;
+                var runway_vis  = DataJSON_AVWX.runway_visibility;
+                var visibility  = DataJSON_AVWX.visibility.value + DataJSON_AVWX.units.visibility;
                 
                 
-                var temp_color_celsius = DataJSON_AVWX.Temperature;
-                if (DataJSON_AVWX.Units.Temperature == "F") {
-                  temp_color_celsius = (DataJSON_AVWX.Temperature - 32)*5/9;
-                  console.log("Converted from " + DataJSON_AVWX.Temperature + "F to " + temp_color_celsius + "C");
+                var temp_color_celsius = DataJSON_AVWX.temperature.value;
+                if (DataJSON_AVWX.units.temperature == "F") {
+                  temp_color_celsius = (DataJSON_AVWX.temperature.value - 32)*5/9;
+                  console.log("Converted from " + DataJSON_AVWX.temperature.value + "F to " + temp_color_celsius + "C");
                 }
                 console.log("temp_color_celsius = " + temp_color_celsius);
                 
-                //cloudlist = JSON.stringify(cloudlist);
-                
-                var foo = cloudlist;
-                var cloudlist_str = " ";
-                var otherlist_str = " ";
-                
-                var j = 0;
-                var key_value_pair;
-                for(var i in foo) {
-                  key_value_pair = String(foo[i]);
-                  key_value_pair = key_value_pair.split(",").join("");
-                  console.log("key_value_pair = " + key_value_pair);
-                  if (j === 0) cloudlist_str = key_value_pair; else cloudlist_str = cloudlist_str + " " + key_value_pair;
-                  j++;
-                }
-                j = 0;
-                foo = otherlist;
-                for(var i in foo) {
-                  key_value_pair = String(foo[i]);
-                  key_value_pair = key_value_pair.split(",").join("");
-                  console.log("key_value_pair = " + key_value_pair);
-                  if (j === 0) otherlist_str = key_value_pair; else otherlist_str = otherlist_str + " " + key_value_pair;
-                  j++;
-                }
+		var cloudlist_str = "";
+		for (var i = 0; i < cloudlist.length; i++) {
+		  cloudlist_str += cloudlist[i].repr + " ";
+		}
+		if (cloudlist.length == 0) cloudlist_str = "CLR "
+
+                var otherlist_str = "";
+		for (var i = 0; i < otherlist.length; i++) {
+		  otherlist_str += otherlist[i].repr + " ";
+		}
                 
                 var time_of_last_data = 0; //time of data on server in Unix Timestamp (UTC !!!)
                 ;
                 var time_of_last_data_example = 1439136487;
-                time_of_last_data = convertAVWXTimeToUnix(DataJSON_AVWX.Time);
+                time_of_last_data = convertAVWXTimeToUnix(DataJSON_AVWX.time.repr);
                 if (!DataJSON_OWM_error){
                   if (configuration.show_update_time == 2){
                     time_of_last_data = Number(DataJSON_OWM.dt);
@@ -474,7 +464,7 @@ function SendToPebble(pos, use_default) {
                 if ((Forecast.TempMin == 10000) || (Forecast.TempMax === 0)){
                   OWM_ForecastMinMax = " --/-- ";
                 } else {
-                  if (DataJSON_AVWX.Units.Temperature == "F") {
+                  if (DataJSON_AVWX.units.temperature == "F") {
                     OWM_ForecastMinMax = Math.round((Forecast.TempMax-273.15)*1.8+32) + "__/" + Math.round((Forecast.TempMin-273.15)*1.8+32) + "__F";
                   } else {
                     OWM_ForecastMinMax = Math.round((Forecast.TempMax-273.15)) + "__/" + Math.round((Forecast.TempMin-273.15)) + "__C";
@@ -622,7 +612,7 @@ function SendToPebble(pos, use_default) {
                 var weather_Line_2 = WeatherInfoStr_5;
                 var weather_Line_3 = WeatherInfoStr_6 + "\n" + WeatherInfoStr_7;
                 var weather_Line_4 = WeatherInfoStr_3 + " " + WeatherInfoStr_4;
-                var weather_Line_5 = WeatherInfoStr_8_1 + " " + WeatherInfoStr_8_2 + " " + WeatherInfoStr_8_3;
+                var weather_Line_5 = WeatherInfoStr_8_1 + WeatherInfoStr_8_2 + WeatherInfoStr_8_3;
                 var weather_Line_6 = "";
                 var weather_Line_7 = "";
                 var weather_Line_8 = "";
@@ -902,7 +892,7 @@ Pebble.addEventListener('ready',
     //for (i=0; i<12; i++) console.log(pad(i));
     
     // Get the initial weather
-    //getWeather();
+    getWeather();
   }
 );
 
