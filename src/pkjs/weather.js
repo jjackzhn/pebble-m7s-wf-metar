@@ -429,7 +429,7 @@ function SendToPebble(pos, use_default) {
 
                 var otherlist_str = "";
 		for (var i = 0; i < otherlist.length; i++) {
-		  otherlist_str += otherlist[i].repr + " ";
+		  otherlist_str += otherlist[i] + " ";
 		}
                 
                 var time_of_last_data = 0; //time of data on server in Unix Timestamp (UTC !!!)
